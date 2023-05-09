@@ -27,7 +27,7 @@ def parse_text_to_json(text):
                 elif key == 'similar':
                     value = value.split()[1:]
                 elif key == 'categories':
-                    value = [[x.strip() for x in t.split('|')] for t in value.strip().split('\n')[1:]]
+                    value = [[x.strip() for x in t.split('|') if x.strip()] for t in value.strip().split('\n')[1:]]
                 elif key == 'reviews':
                     reviews = {}
                     # review regex
@@ -78,7 +78,9 @@ def parse_text_to_json(text):
                                 reviews[rkey] = rvalue
                    
                     value = reviews
-                groups[key] = value
+                if key is not None and value is not None and str(key).strip() and str(value).strip():
+                    groups[key] = value
+
         resp.append(groups)
 
     with open("data/sample.json", "w") as file:
