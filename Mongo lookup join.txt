@@ -1,0 +1,39 @@
+
+"$lookup": {
+            "from": "amazon-metadata",
+            "localField": "product_id",
+            "foreignField": "Id",
+            "as": "metadata"
+        }
+    },
+    {
+        "$unwind": "$co_purchases"
+    },
+    {
+        "$lookup": {
+            "from": "amazon-metadata",
+            "localField": "co_purchases",
+            "foreignField": "Id",
+            "as": "co_purchase_metadata"
+        }
+    },
+    {
+        "$group": {
+            "_id": "$_id",
+            "product_id": { "$first": "$product_id" },
+            "co_purchases": { "$push": "$co_purchases" },
+            "metadata": { "$first": "$metadata" },
+            "co_purchase_metadata": { "$push": "$co_purchase_metadata" }
+        }
+    },
+    {
+        "$project": {
+            "_id": 0,
+            "product_id": 1,
+            "co_purchases": 1,
+            "metadata.Id": 1,
+            "metadata.title": 1,
+            "co_purchase_metadata.Id": 1,
+            "co_purchase_metadata.title": 1
+        }
+    }

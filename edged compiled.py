@@ -24,7 +24,7 @@ for file_name in tqdm(file_names):
         product = {
             "product_id": product_id,
             "co_purchases": co_purchases,
-            "Date": file_name,
+            "Date": file_name.split('.')[0],
             "month": month
         }
         products.append(product)
