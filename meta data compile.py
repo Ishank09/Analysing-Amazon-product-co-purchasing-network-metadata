@@ -1,3 +1,6 @@
+'''
+Module to get amazon-meta
+'''
 import re
 import json
 from time import sleep

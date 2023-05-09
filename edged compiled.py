@@ -1,3 +1,7 @@
+'''
+Module to preprocess the edges data into meaningful format.
+co-purchase.json will be generated 
+'''
 import json
 import os
 from tqdm import tqdm
