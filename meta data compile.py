@@ -119,6 +119,6 @@ def parse_text_to_json(text):
     groups = {}
 
 data = ""
-with open('data/sample.txt', 'r') as file:
+with open('data/amazon-meta.txt', 'r') as file:
     data = file.read()
 parse_text_to_json(data)
