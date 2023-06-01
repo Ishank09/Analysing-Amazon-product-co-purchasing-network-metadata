@@ -181,12 +181,17 @@ def parse_text_to_json(text):
                     groups[key] = value
 
         resp.append(groups)
+        return resp
 
     with open("data/sample.json", "w") as file:
         json.dump(resp, file)
     groups = {}
 
-data = ""
-with open('data/amazon-meta.txt', 'r') as file:
-    data = file.read()
-parse_text_to_json(data)
+
+
+
+if __name__ == "__main__":
+    data = ""
+    with open('data/amazon-meta.txt', 'r') as file:
+        data = file.read()
+    parse_text_to_json(data)

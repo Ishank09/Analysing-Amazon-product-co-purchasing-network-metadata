@@ -41,6 +41,7 @@ def preprocess_data():
 
     with open(os.path.join("data", "co-purchases.json"), "w") as f:
         json.dump(products, f)
+    return products
 
 if __name__ == "__main__":
     preprocess_data()
