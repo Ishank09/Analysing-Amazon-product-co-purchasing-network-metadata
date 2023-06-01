@@ -1,19 +1,33 @@
-'''
-Module to get amazon-meta
-'''
 import re
 import json
 from time import sleep
 from tqdm import tqdm
 
 def match_customer_review_pattern(value):
-    # customer review regex
+    """
+    Matches customer review pattern in the given value using regex.
+    
+    Args:
+        value (str): The string to search for customer review pattern.
+        
+    Returns:
+        list: List of matches found in the value.
+    """
     CUST_REVIEW_PATTERN = r'\s*(\d{4}-\d{1,2}-\d{1,2})\s+(cutomer):\s+(\w+)\s+(rating):\s+(\d+)\s+(votes):\s+(\d+)\s+(helpful):\s+(\d+)\s*'
     cust_review_matches = re.findall(CUST_REVIEW_PATTERN, value)
     return cust_review_matches
 
-
 def check_customer_review_pattern(value, revs):
+    """
+    Checks customer review pattern in the given value and appends the parsed customer reviews to the revs list.
+    
+    Args:
+        value (str): The string to check for customer review pattern.
+        revs (list): The list to append the parsed customer reviews.
+        
+    Returns:
+        list: List of customer reviews appended to the revs list.
+    """
     cust_review_matches = match_customer_review_pattern(value)
     if cust_review_matches:
         for cust_review_match in cust_review_matches:
@@ -22,6 +36,16 @@ def check_customer_review_pattern(value, revs):
     return revs
 
 def handle_customer_review_key(crkey, crvalue):
+    """
+    Handles the conversion of customer review key values to appropriate data types.
+    
+    Args:
+        crkey (str): The customer review key.
+        crvalue (str): The customer review value.
+        
+    Returns:
+        int or float or str: The converted value based on the key.
+    """
     if crkey == 'rating' or crkey == 'votes' or crkey == 'helpful':
         return int(crvalue)
     else:
@@ -30,8 +54,16 @@ def handle_customer_review_key(crkey, crvalue):
         except ValueError:
             return crvalue
 
-
 def parse_customer_review_match(cust_review_match):
+    """
+    Parses the matched customer review and returns a dictionary with key-value pairs.
+    
+    Args:
+        cust_review_match (tuple): The matched customer review values.
+        
+    Returns:
+        dict: Parsed customer review with key-value pairs.
+    """
     cus = {}
     crkey = ""
     crvalue = None
@@ -46,22 +78,39 @@ def parse_customer_review_match(cust_review_match):
             crvalue = handle_customer_review_key(crkey, crvalue)
             cus[crkey] = crvalue
     return cus
-
-
-    
+ 
 def match_check_review_pattern(value):
+    """
+    Matches the review pattern in the given value using regex.
+    
+    Args:
+        value (str): The string to search for review pattern.
+        
+    Returns:
+        list: List of matches found in the value.
+    """
     REVIEW_PATTERN = r'\s*(total):\s+(\d+)\s+(downloaded):\s+(\d+)\s+(avg rating):\s+([\d\.]+)\n?\n?((?:\s{4}[^\n]*\n?)*)?'
     review_matches = re.findall(REVIEW_PATTERN, value)
     return review_matches
 
 def check_review_pattern(value, reviews):
+    """
+    This function checks if the given value matches the review pattern. If it does, it returns a dictionary of the review data.
+
+    Args:
+        value (str): The value to check.
+        reviews (dict): The dictionary to store the review data in.
+
+    Returns:
+        dict: The dictionary of the review data, or None if the value does not match the review pattern.
+    """
+
     review_matches = match_check_review_pattern(value)
     if review_matches:
         for ri in range(len(review_matches[0])):
-            if ri==6:
+            if ri == 6:
                 rval = review_matches[0][ri]
                 revs = []
-                
                 reviews['customer_reviews'] = check_customer_review_pattern(rval, revs)
                 break
             if ri % 2 == 0:
@@ -76,13 +125,32 @@ def check_review_pattern(value, reviews):
                     rvalue = rvalue
                 reviews[rkey] = rvalue
     return reviews
-    
+
 def match_global_block_pattern(value):
+    """
+    This function matches the global block pattern in the given value.
+
+    Args:
+        value (str): The value to match.
+
+    Returns:
+        list: A list of matches, or None if the value does not match the pattern.
+    """
+
     GLOBAL_BLOCK_PATTERN = r'(Id): ([^\n]+)\n(ASIN): ([^\n]+)(?:\n  (title): ([^\n]+))?(?:\n  (group): ([^\n]+))?(?:\n  (salesrank): ([^\n]+))?(?:\n  (similar): ([^\n]+))?(?:\n  (categories):([\s\S]*?)(?=\n\n|\n  reviews))?(?:\n  (reviews):([\s\S]*?)(?=\n\n|\n  Id))?'
     matches = re.findall(GLOBAL_BLOCK_PATTERN, value)
     return matches
 
 def parse_text_to_json(text):
+    """
+    This function parses the given text into a JSON object.
+
+    Args:
+        text (str): The text to parse.
+
+    Returns:
+        dict: The JSON object, or None if the text could not be parsed.
+    """
 
     matches = match_global_block_pattern(text)
     resp = []
